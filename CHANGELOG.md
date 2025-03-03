@@ -26,6 +26,10 @@
 - **requirements:** update openai and streamlit versions, add streamlit_agraph ([81f3721](https://github.com/DaoChaShao/py-st-knowledge-base/commit/81f372135e70f10a11fce51658cc6e3d4a656449))
 - update package versions to exact matches ([46101d3](https://github.com/DaoChaShao/py-st-knowledge-base/commit/46101d3bafc74cdd6ab5eef4b9b1e694b2351218))
 
+### Chore
+
+- **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([e2a471f](https://github.com/DaoChaShao/py-st-knowledge-base/commit/e2a471fa31323a07a8a930fb3da86a4278045b07))
+
 ### Docs
 
 - add knowledge base chatbot home page and subpages refactor(core): update main function and improve imports chore: add Pandas dependency ([bb38430](https://github.com/DaoChaShao/py-st-knowledge-base/commit/bb3843068a933a1668a959c253199f8d6cea5ece))
