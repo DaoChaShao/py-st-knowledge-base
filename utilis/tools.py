@@ -1,7 +1,9 @@
+from pandas import DataFrame
 from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN, SpectralClustering
+from sklearn.metrics import silhouette_score
 from sklearn.mixture import GaussianMixture
 from streamlit import (sidebar, header, segmented_control, selectbox,
-                       caption, text_input, slider)
+                       caption, text_input, slider, line_chart)
 from time import perf_counter
 
 from utilis.models import api_key_checker
@@ -61,7 +63,8 @@ def paragraph(chunks: dict[int, list[str]]):
     return [" ".join(chunk) for chunk in chunks.values()]
 
 
-def params():
+def params() -> tuple[str, str, str] | tuple[None, None, None]:
+    """ Return the parameters for the embedding model """
     with sidebar:
         header("Embedding Parameters")
         options_seg: list[str] = ["OpenAI", "Hugging Face"]
@@ -94,7 +97,50 @@ def params():
         return None, None, None
 
 
-def cluster_kmeans(embeddings: dict, sentences: list[str], num_clusters: int = 5) -> dict:
+def n_clusters_plot(embeddings: list, max_: int, seed_: int = None):
+    sse: list[float] = []
+    values = list(range(2, max_))
+    for i in values:
+        kmeans = KMeans(n_clusters=i, random_state=seed_)
+        kmeans.fit(embeddings)
+        sse.append(kmeans.inertia_)
+
+    cluster: dict[str, list[float]] = {"Number of Clusters": values, "SSE": sse}
+    df: DataFrame = DataFrame(cluster)
+    line_chart(df, x="Number of Clusters", y="SSE")
+
+
+def n_clusters_ss(embeddings: list, max_: int) -> int:
+    """ Return the optimal number of clusters using the Silhouette Score
+
+    :param embeddings: the embeddings of the sentences
+    :param max_: the maximum number of clusters
+    :return: the optimal number of clusters
+    """
+    # Initialize the best silhouette score
+    best_score: float = -1
+    # Initialize the best number of clusters
+    best_k: int = 0
+    values = list(range(2, max_))
+
+    for k in values:
+        kmeans = KMeans(n_clusters=k, random_state=0)
+        kmeans.fit(embeddings)
+        score = silhouette_score(embeddings, kmeans.labels_)
+        if score > best_score:
+            best_score = score
+            best_k = k
+    return best_k
+
+
+def cluster_kmeans(embeddings: list, sentences: list[str], num_clusters: int = 5) -> dict:
+    """ Cluster the embeddings using K-Means Clustering
+
+    :param embeddings: the embeddings of the sentences
+    :param sentences:  to cluster the embeddings
+    :param num_clusters: the number of clusters
+    :return: a dictionary of clusters
+    """
     # Use K-Means clustering to cluster the embeddings
     kmeans = KMeans(n_clusters=num_clusters, random_state=None)
     kmeans.fit(embeddings)
@@ -108,7 +154,7 @@ def cluster_kmeans(embeddings: dict, sentences: list[str], num_clusters: int = 5
     return clusters
 
 
-def cluster_agglomerate(embeddings: dict, sentences: list[str], threshold: float = 1.0) -> dict:
+def cluster_agglomerate(embeddings: list, sentences: list[str], threshold: float = 1.0) -> dict:
     # Cluster the embeddings using Agglomerative Clustering with a threshold of 1.0 and average linkage
     agglomerate = AgglomerativeClustering(n_clusters=None, distance_threshold=threshold, linkage="average")
     # Use the fit_predict method to cluster the embeddings and return the cluster labels
@@ -123,7 +169,7 @@ def cluster_agglomerate(embeddings: dict, sentences: list[str], threshold: float
     return clusters
 
 
-def cluster_dbscan(embeddings: dict, sentences: list[str], eps: float = 0.5, min_samples: int = 5) -> dict:
+def cluster_dbscan(embeddings: list, sentences: list[str], eps: float = 0.5, min_samples: int = 5) -> dict:
     dbscan = DBSCAN(eps=eps, min_samples=min_samples)
     labels = dbscan.fit_predict(embeddings)
 
@@ -137,7 +183,7 @@ def cluster_dbscan(embeddings: dict, sentences: list[str], eps: float = 0.5, min
     return clusters
 
 
-def cluster_sc(embeddings: dict, sentences: list[str], num_clusters: int = 5) -> dict:
+def cluster_sc(embeddings: list, sentences: list[str], num_clusters: int = 5) -> dict:
     spectral = SpectralClustering(n_clusters=num_clusters, affinity='nearest_neighbors')
     labels = spectral.fit_predict(embeddings)
 
@@ -149,7 +195,7 @@ def cluster_sc(embeddings: dict, sentences: list[str], num_clusters: int = 5) ->
     return clusters
 
 
-def cluster_gmm(embeddings: dict, sentences: list[str], num_clusters: int = 5) -> dict:
+def cluster_gmm(embeddings: list, sentences: list[str], num_clusters: int = 5) -> dict:
     gmm = GaussianMixture(n_components=num_clusters)
     labels = gmm.fit_predict(embeddings)
 
