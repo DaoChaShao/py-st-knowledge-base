@@ -23,6 +23,7 @@
 
 ### Docs
 
+- add knowledge base chatbot home page and subpages refactor(core): update main function and improve imports chore: add Pandas dependency ([d5206f5](https://github.com///commit/d5206f50607a6b63e1d46527894958bdc70d6300))
 - update CHANGELOG.md ([46c6fcc](https://github.com///commit/46c6fccce870c11b57f72f38f7eda38a93877449))
 - update package version commit hash ([c23b856](https://github.com///commit/c23b8560a5b107d8c34ba8b9821819f867d38ca1))
 - Add README.md for application introduction and knowledge base structure guidelines ([df044e3](https://github.com///commit/df044e3ed12b7c74caf1a6f64f432e374a7fa08d))
