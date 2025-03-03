@@ -5,6 +5,8 @@
 
 ### Features
 
+- **tools:** implement knowledge base builder using numpy for clustering centroids ([03f5925](https://github.com///commit/03f59257d8dd9eed27460a3f0e1f399a2089a7b4))
+- **requirements:** add numpy dependency for enhanced numerical operations ([1be0257](https://github.com///commit/1be0257026f2882d9e8d4195fb75b10981303774))
 - **graphs:** update node styles for improved visualization clarity ([d20c144](https://github.com///commit/d20c144ffa4faea1f7f4aa55e2d0258fc36d174b))
 - **clustering:** add functions for optimal cluster number plotting and silhouette score calculation ([80200f8](https://github.com///commit/80200f8e5cca0e0d5d4ccfd2c743ce87d060767f))
 - **layout:** change page layout from centered to wide ([c59f4e1](https://github.com///commit/c59f4e1a4184601502035d5f3236d1edb205fd30))
@@ -29,6 +31,7 @@
 
 ### Chore
 
+- **changelog:** update CHANGELOG.md for version 0.1.0 with recent features and bug fixes ([9cf3a3b](https://github.com///commit/9cf3a3b19c181b313003310d6eb936f94622ad05))
 - **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([975cc0a](https://github.com///commit/975cc0a5e34c4396a34ca7922dd0ff96ff9cc3ce))
 
 ### Docs
