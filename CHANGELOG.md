@@ -11,7 +11,7 @@
 
 ### Bug Fixes
 
-- update package versions to exact matches ([ad965ce](https://github.com///commit/ad965ce825703947379bb373fea704835ad0a699))
+- update package versions to exact matches ([46101d3](https://github.com///commit/46101d3bafc74cdd6ab5eef4b9b1e694b2351218))
 
 ### Docs
 
