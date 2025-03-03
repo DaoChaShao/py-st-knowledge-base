@@ -45,14 +45,14 @@ def network(clusters: dict) -> agraph:
 
     for label, sentences in clusters.items():
         node = Node(id=f"{label}", label=f"",
-                    color=Color.RED, shape=Shape.DOT,
-                    size=30, font={"size": 24})
+                    color=Color.GRAY, shape=Shape.HEXAGON,
+                    size=10, font={"size": 12})
         nodes.append(node)
 
         for sentence in sentences:
             node = Node(id=sentence, label=sentence,
-                        color=Color.GREEN, shape=Shape.HEXAGON,
-                        size=15, font={"size": 12})
+                        color=Color.RED, shape=Shape.DOT,
+                        size=30, font={"size": 16})
             nodes.append(node)
 
             edge = Edge(source=sentence, target=f"{label}", arrow_to=True,
