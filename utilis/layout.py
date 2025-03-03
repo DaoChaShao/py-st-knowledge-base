@@ -5,7 +5,7 @@ def pages_configer():
     set_page_config(
         page_title="Knowledge Base",
         page_icon=":material/school:",
-        layout="centered",
+        layout="wide",
         initial_sidebar_state="expanded",
     )
 
