@@ -1,3 +1,4 @@
+from numpy import array
 from pandas import DataFrame
 from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN, SpectralClustering
 from sklearn.metrics import silhouette_score
@@ -205,3 +206,17 @@ def cluster_gmm(embeddings: list, sentences: list[str], num_clusters: int = 5) -
             clusters[label] = []
         clusters[label].append(sentences[i])
     return clusters
+
+
+def knowledge_base_builder(embeddings: list, labels: list[int], num_clusters: int, sentences: list[str]):
+    centroids = array([embeddings[labels == i].mean(axis=0) for i in range(num_clusters)])
+
+    knowledge_base: dict[str, list | dict] = {
+        "centroids": centroids,
+        "clusters": {i: [] for i in range(num_clusters)},
+    }
+
+    for i, label in enumerate(labels):
+        knowledge_base["clusters"][label].append(sentences[i])
+
+    return knowledge_base
