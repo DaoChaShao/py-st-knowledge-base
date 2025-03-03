@@ -18,6 +18,7 @@
 
 ### Docs
 
+- update CHANGELOG.md ([1a0bfeb](https://github.com///commit/1a0bfeb0020a7960d78c26a7e5b222eeffca166d))
 - update package version commit hash ([c23b856](https://github.com///commit/c23b8560a5b107d8c34ba8b9821819f867d38ca1))
 - Add README.md for application introduction and knowledge base structure guidelines ([df044e3](https://github.com///commit/df044e3ed12b7c74caf1a6f64f432e374a7fa08d))
 
