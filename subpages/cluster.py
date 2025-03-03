@@ -1,10 +1,10 @@
 from pandas import DataFrame
-from pprint import pprint
 from streamlit import (empty, data_editor, sidebar, spinner,
-                       subheader, markdown, write, session_state)
+                       subheader, markdown, session_state)
 
 from utilis.models import api_key_checker, OpenAIEmbedder, HuggingFaceEmbedder
-from utilis.tools import params, SENTENCES, cluster_kmeans
+from utilis.graphs import network
+from utilis.tools import params, SENTENCES, cluster_kmeans, n_clusters_ss
 
 empty_messages: empty = empty()
 
@@ -32,14 +32,16 @@ else:
                         embedder = OpenAIEmbedder(var)
                         embeddings = embedder.client(SENTENCES, embed, 512)
 
-                        session_state.cluster_open = cluster_kmeans(embeddings, SENTENCES)
+                        n_clusters: int = n_clusters_ss(embeddings, len(SENTENCES))
+                        session_state.cluster_open = cluster_kmeans(embeddings, SENTENCES, num_clusters=n_clusters)
 
                 if session_state.cluster_open:
-                    for label, sentences in session_state.cluster_open.items():
-                        subheader(f"Cluster {label}")
-                        for sentence in sentences:
-                            markdown(f"- {sentence}")
-                        markdown("---")
+                    network(session_state.cluster_open)
+                    # for label, sentences in session_state.cluster_open.items():
+                    #     subheader(f"Cluster {label}")
+                    #     for sentence in sentences:
+                    #         markdown(f"- {sentence}")
+                    #     markdown("---")
                     empty_messages.success("OpenAI Embedding completed successfully.")
         case "Hugging Face":
             if sidebar.button("Hug Embed", type="primary", help="Click to embed the sentences"):
@@ -50,9 +52,10 @@ else:
                     session_state.cluster_hug = cluster_kmeans(embeddings, SENTENCES)
 
             if session_state.cluster_hug:
-                for label, sentences in session_state.cluster_open.items():
-                    subheader(f"Cluster {label}")
-                    for sentence in sentences:
-                        markdown(f"- {sentence}")
-                    markdown("---")
+                network(session_state.cluster_hug)
+                # for label, sentences in session_state.cluster_open.items():
+                #     subheader(f"Cluster {label}")
+                #     for sentence in sentences:
+                #         markdown(f"- {sentence}")
+                #     markdown("---")
                 empty_messages.success("Hugging Face Embedding completed successfully.")
