@@ -1,7 +1,10 @@
-from sentence_transformers import SentenceTransformer
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN, SpectralClustering
+from sklearn.mixture import GaussianMixture
+from streamlit import (sidebar, header, segmented_control, selectbox,
+                       caption, text_input, slider)
 from time import perf_counter
-from typing import List, Dict
+
+from utilis.models import api_key_checker
 
 
 class Timer(object):
@@ -33,7 +36,7 @@ class Timer(object):
         return f"{self._description} has NOT been started."
 
 
-SENTENCES: List[str] = [
+SENTENCES: list[str] = [
     "Transformer 是一种深度学习模型。",
     "它用于自然语言处理任务。",
     "自注意力机制是 Transformer 的核心。",
@@ -50,50 +53,109 @@ SENTENCES: List[str] = [
 ]
 
 
-class Chunker(object):
+def paragraph(chunks: dict[int, list[str]]):
+    """ Return the chunks as a list of paragraphs
 
-    def __init__(self, model: str = "paraphrase-distilroberta-base-v1", threshold: float = 1.0) -> None:
-        """ Initialize the hyperparameters of the Chunker object
+    :return: a list of paragraphs
+    """
+    return [" ".join(chunk) for chunk in chunks.values()]
 
-        :param model: the name of the model to use for the chunking, default is "all-MiniLM-L6-v2"
-        :param threshold: the threshold for the Agglomerative Clustering, default is 1.0, the range is (0.5, 1.5)
-        """
-        self._model: str = model
-        self._threshold: float = threshold
-        self._chunks: Dict[int, List[str]] = {}
 
-    def chunk(self, sentences: List[str]) -> Dict[int, List[str]]:
-        """ Chunk the sentences using Agglomerative Clustering
+def params():
+    with sidebar:
+        header("Embedding Parameters")
+        options_seg: list[str] = ["OpenAI", "Hugging Face"]
+        category: str = segmented_control("Segmentation Model Type", options_seg, selection_mode="single", disabled=0,
+                                          help="Select a model type for the segmentation.")
+        caption(f"The selected model type is **{category}**.")
 
-        :param sentences: a list of sentences to be chunked
-        :return: a dictionary, where the keys are the cluster labels and the values are the corresponding sentences
-        """
-        # Reset the chunks dictionary avoiding conflicts with previous chunking results
-        self._chunks = {}
+        match category:
+            case "OpenAI":
+                options_box: list[str] = ["text-embedding-3-small"]
+                model = selectbox("Model", options_box, 0, placeholder="Choose an option",
+                                  help="Select a model for the chunking.")
+                caption(f"The selected model is **{model}**.")
+                api_key: str = text_input("API Key", max_chars=200, type="password",
+                                          placeholder="Enter your API key.", help="Enter your OpenAI API key.")
+                if not api_key_checker(api_key):
+                    caption("**INVALID** API key. Please enter a valid API key.")
+                else:
+                    caption("API key is **VALID**.")
+                return category, model, api_key
+            case "Hugging Face":
+                options_box: list[str] = ["all-MiniLM-L6-v2"]
+                model = selectbox("Model", options_box, 0, placeholder="Choose an option",
+                                  help="Select a model for the chunking.")
+                caption(f"The selected model is **{model}**.")
+                threshold = slider("Threshold", min_value=0.5, max_value=1.5, value=1.0, step=0.1,
+                                   help="Select a threshold for the Agglomerative Clustering.")
+                caption(f"The selected threshold is **{threshold}**.")
+                return category, model, threshold
+        return None, None, None
 
-        # Load the model from Hugging Face model hub
-        model = SentenceTransformer(self._model)
 
-        # Compute the embeddings for the sentences, the dimensionality of the embeddings is 384
-        embeddings = model.encode(sentences)
+def cluster_kmeans(embeddings: dict, sentences: list[str], num_clusters: int = 5) -> dict:
+    # Use K-Means clustering to cluster the embeddings
+    kmeans = KMeans(n_clusters=num_clusters, random_state=None)
+    kmeans.fit(embeddings)
 
-        # Cluster the embeddings using Agglomerative Clustering with a threshold of 1.0 and average linkage
-        clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=self._threshold, linkage="average")
-        # Use the fit_predict method to cluster the embeddings and return the cluster labels
-        clusters = clustering.fit_predict(embeddings)
+    # create a dictionary, where the keys are the cluster labels and the values are the corresponding sentences
+    clusters = {}
+    for index, label in enumerate(kmeans.labels_):
+        if label not in clusters:
+            clusters[label] = []
+        clusters[label].append(sentences[index])
+    return clusters
 
-        for index, category in enumerate(clusters):
-            if category not in self._chunks:
-                self._chunks[category] = []
-            self._chunks[category].append(sentences[index])
-        return self._chunks
 
-    def paragraph(self):
-        """ Return the chunks as a list of paragraphs
+def cluster_agglomerate(embeddings: dict, sentences: list[str], threshold: float = 1.0) -> dict:
+    # Cluster the embeddings using Agglomerative Clustering with a threshold of 1.0 and average linkage
+    agglomerate = AgglomerativeClustering(n_clusters=None, distance_threshold=threshold, linkage="average")
+    # Use the fit_predict method to cluster the embeddings and return the cluster labels
+    labels = agglomerate.fit_predict(embeddings)
 
-        :return: a list of paragraphs
-        """
-        if not self._chunks:
-            raise ValueError("No chunks found. Please run `chunk(sentences)` first.")
+    # create a dictionary, where the keys are the cluster labels and the values are the corresponding sentences
+    clusters = {}
+    for index, label in enumerate(labels):
+        if label not in clusters:
+            clusters[label] = []
+        clusters[label].append(sentences[index])
+    return clusters
 
-        return [" ".join(chunk) for chunk in self._chunks.values()]
+
+def cluster_dbscan(embeddings: dict, sentences: list[str], eps: float = 0.5, min_samples: int = 5) -> dict:
+    dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+    labels = dbscan.fit_predict(embeddings)
+
+    # create a dictionary, where the keys are the cluster labels and the values are the corresponding sentences
+    clusters = {}
+    for index, label in enumerate(labels):
+        if label != -1:  # ignore outliers
+            if label not in clusters:
+                clusters[label] = []
+            clusters[label].append(sentences[index])
+    return clusters
+
+
+def cluster_sc(embeddings: dict, sentences: list[str], num_clusters: int = 5) -> dict:
+    spectral = SpectralClustering(n_clusters=num_clusters, affinity='nearest_neighbors')
+    labels = spectral.fit_predict(embeddings)
+
+    clusters = {}
+    for i, label in enumerate(labels):
+        if label not in clusters:
+            clusters[label] = []
+        clusters[label].append(sentences[i])
+    return clusters
+
+
+def cluster_gmm(embeddings: dict, sentences: list[str], num_clusters: int = 5) -> dict:
+    gmm = GaussianMixture(n_components=num_clusters)
+    labels = gmm.fit_predict(embeddings)
+
+    clusters = {}
+    for i, label in enumerate(labels):
+        if label not in clusters:
+            clusters[label] = []
+        clusters[label].append(sentences[i])
+    return clusters
