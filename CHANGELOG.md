@@ -5,9 +5,13 @@
 
 ### Features
 
-- add changelog with initial features and dependencies ([4a96d4a](https://github.com///commit/4a96d4af3bc93d4aca31158168306b0f1dcf6104))
+- add changelog with initial features and dependencies ([1fb67be](https://github.com///commit/1fb67be00b987620f73f945e4320a16fc43e8c73))
 - add main function for streamlit app ([ec71ca1](https://github.com///commit/ec71ca14f32127bd391c0a6a0970912722b45ce4))
 - Add pyproject.toml for git-changelog configuration ([8be12ef](https://github.com///commit/8be12efcdae6ea8a11cd502e9ccd11473868e708))
+
+### Bug Fixes
+
+- update package versions to exact matches ([ad965ce](https://github.com///commit/ad965ce825703947379bb373fea704835ad0a699))
 
 ### Docs
 
