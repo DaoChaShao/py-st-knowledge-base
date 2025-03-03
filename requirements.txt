@@ -1,9 +1,10 @@
 git-changelog==2.5.3
-openai==1.65.2
+openai==1.61.1
 pandas==2.2.3
 plotly==6.0.0
 python-dotenv==1.0.1
 scikit-learn==1.6.1
 sentence_transformers==3.4.1
-streamlit==1.42.2
+streamlit==1.42.0
+streamlit_agraph==0.0.45
 watchdog==6.0.0
