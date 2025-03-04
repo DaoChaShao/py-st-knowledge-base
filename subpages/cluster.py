@@ -5,7 +5,9 @@ from streamlit import (empty, data_editor, sidebar, spinner,
 from utilis.models import api_key_checker, OpenAIEmbedder, HuggingFaceEmbedder
 from utilis.graphs import network
 from utilis.tools import (params, COMPARES, cluster_kmeans, n_clusters_ss,
-                          knowledge_base_builder, QUERIES, search_top_one)
+                          knowledge_base_builder, QUERIES,
+                          search_top_one_open, search_top_one_hug,
+                          search_top_n_open, search_top_n_hug)
 
 empty_messages: empty = empty()
 
@@ -38,10 +40,9 @@ else:
                         embeddings = embedder.client(COMPARES, embed, 512)
 
                         n_clusters: int = n_clusters_ss(embeddings, len(COMPARES))
-                        labels, session_state.open_clusters = cluster_kmeans(embeddings, COMPARES,
-                                                                             num_clusters=n_clusters)
+                        labels, session_state.open_clusters = cluster_kmeans(embeddings, COMPARES, n_clusters)
 
-                if session_state.cluster_open:
+                if session_state.open_clusters:
                     # network(session_state.open_clusters)
                     # for label, sentences in session_state.cluster_open.items():
                     #     subheader(f"Cluster {label}")
@@ -51,30 +52,62 @@ else:
 
                     subheader("The Network of the Knowledge Base")
                     knowledge_base = knowledge_base_builder(embeddings, labels, n_clusters, COMPARES)
-                    network(knowledge_base["clusters"])
+                    network(session_state.open_knowledge_base["clusters"])
 
-                    feedback: str = search_top_one(embedder, embed, QUERIES, knowledge_base)
+                    feedback_one: str = search_top_one_open(embedder, embed, QUERIES, knowledge_base)
+                    feedback_n: list[str] = search_top_n_open(embedder, embed, QUERIES, knowledge_base)
 
-                    if feedback:
-                        subheader("Feedback given by the function `search_top_one`")
-                        df_feedback = DataFrame(data={"sentences": [feedback]})
+                    # if feedback_one:
+                    #     subheader("Feedback given by the function `search_top_one_OpenAI`")
+                    #     df_feedback = DataFrame(data={"sentences": [feedback_one]})
+                    #     data_editor(df_feedback, hide_index=True, disabled=True, use_container_width=True)
+                    #     empty_messages.success("OpenAI Embedding completed successfully.")
+                    # else:
+                    #     empty_messages.error("No feedback found.")
+
+                    if feedback_n:
+                        subheader("Feedback given by the function `search_top_n_OpenAI`")
+                        df_feedback = DataFrame(data={"sentences": feedback_n})
                         data_editor(df_feedback, hide_index=True, disabled=True, use_container_width=True)
                         empty_messages.success("OpenAI Embedding completed successfully.")
                     else:
                         empty_messages.error("No feedback found.")
+
         case "Hugging Face":
             if sidebar.button("Hug Embed", type="primary", help="Click to embed the sentences"):
                 with spinner("Embedding...", show_time=True):
                     embedder = HuggingFaceEmbedder(embed)
                     embeddings = embedder.client(COMPARES)
 
-                    session_state.hug_clusters = cluster_kmeans(embeddings, COMPARES)
+                    labels, session_state.hug_clusters = cluster_kmeans(embeddings, COMPARES)
 
-            if session_state.cluster_hug:
-                network(session_state.hug_clusters)
+            if session_state.hug_clusters:
+                # network(session_state.hug_clusters)
                 # for label, sentences in session_state.cluster_open.items():
                 #     subheader(f"Cluster {label}")
                 #     for sentence in sentences:
                 #         markdown(f"- {sentence}")
                 #     markdown("---")
-                empty_messages.success("Hugging Face Embedding completed successfully.")
+
+                subheader("The Network of the Knowledge Base")
+                knowledge_base = knowledge_base_builder(embeddings, labels, 5, COMPARES)
+                network(knowledge_base["clusters"])
+
+                feedback_one: str = search_top_one_hug(embedder, QUERIES, knowledge_base)
+                feedback_n: list = search_top_n_hug(embedder, QUERIES, knowledge_base)
+
+                # if feedback_one:
+                #     subheader("Feedback given by the function `search_top_one_HuggingFace`")
+                #     df_feedback = DataFrame(data={"sentences": [feedback_one]})
+                #     data_editor(df_feedback, hide_index=True, disabled=True, use_container_width=True)
+                #     empty_messages.success("OpenAI Embedding completed successfully.")
+                # else:
+                #     empty_messages.error("No feedback found.")
+
+                if feedback_n:
+                    subheader("Feedback given by the function `search_top_n_HuggingFace`")
+                    df_feedback = DataFrame(data={"sentences": feedback_n})
+                    data_editor(df_feedback, hide_index=True, disabled=True, use_container_width=True)
+                    empty_messages.success("OpenAI Embedding completed successfully.")
+                else:
+                    empty_messages.error("No feedback found.")
