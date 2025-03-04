@@ -52,7 +52,7 @@ else:
 
                     subheader("The Network of the Knowledge Base")
                     knowledge_base = knowledge_base_builder(embeddings, labels, n_clusters, COMPARES)
-                    network(session_state.open_knowledge_base["clusters"])
+                    network(knowledge_base["clusters"])
 
                     feedback_one: str = search_top_one_open(embedder, embed, QUERIES, knowledge_base)
                     feedback_n: list[str] = search_top_n_open(embedder, embed, QUERIES, knowledge_base)
