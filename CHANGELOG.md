@@ -39,6 +39,7 @@
 
 ### Chore
 
+- **changelog:** add entry for cluster network function update ([6b875b7](https://github.com///commit/6b875b72362651a53dcf1cedc7db05cda1f6bc01))
 - **changelog:** update CHANGELOG.md with recent bug fixes and documentation updates ([cccf7e3](https://github.com///commit/cccf7e392a77198bc04ee0ae31e2a92a54eb46c6))
 - **changelog:** update CHANGELOG.md with recent feature additions ([7eb7eee](https://github.com///commit/7eb7eee096ebd43e12edc7078c4234f4a68f93fe))
 - **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([6df4d74](https://github.com///commit/6df4d74d94b93a9daaedfba5e1714203dd704ccf))
