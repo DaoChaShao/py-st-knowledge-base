@@ -31,6 +31,7 @@
 
 ### Bug Fixes
 
+- **cluster:** update network function to use the correct knowledge base clusters ([e9661a9](https://github.com///commit/e9661a93b40484bd021bfd78cc6c18fac68a1238))
 - **home:** update GitHub badge link to point to the correct repository ([49a50a0](https://github.com///commit/49a50a0a205e0fdbf9319a87f02deee56f40a6b6))
 - **graphs:** add label to edges for better clarity in graph representation ([af6f9af](https://github.com///commit/af6f9afe2431d5d5a5059796f7e7495a7bdd63b8))
 - **requirements:** update openai and streamlit versions, add streamlit_agraph ([81f3721](https://github.com///commit/81f372135e70f10a11fce51658cc6e3d4a656449))
@@ -38,7 +39,7 @@
 
 ### Chore
 
-- **changelog:** update CHANGELOG.md with recent bug fixes and documentation updates ([d960fc1](https://github.com///commit/d960fc1a86226d56d372f9e1d16183296b1afb24))
+- **changelog:** update CHANGELOG.md with recent bug fixes and documentation updates ([cccf7e3](https://github.com///commit/cccf7e392a77198bc04ee0ae31e2a92a54eb46c6))
 - **changelog:** update CHANGELOG.md with recent feature additions ([7eb7eee](https://github.com///commit/7eb7eee096ebd43e12edc7078c4234f4a68f93fe))
 - **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([6df4d74](https://github.com///commit/6df4d74d94b93a9daaedfba5e1714203dd704ccf))
 - **changelog:** update CHANGELOG.md for version 0.1.0 with recent features and bug fixes ([9cf3a3b](https://github.com///commit/9cf3a3b19c181b313003310d6eb936f94622ad05))
