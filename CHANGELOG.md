@@ -31,12 +31,13 @@
 
 ### Bug Fixes
 
+- **graphs:** add label to edges for better clarity in graph representation ([472325a](https://github.com///commit/472325a6e8c51dd108ab393c6ba6076b41defc2b))
 - **requirements:** update openai and streamlit versions, add streamlit_agraph ([81f3721](https://github.com///commit/81f372135e70f10a11fce51658cc6e3d4a656449))
 - update package versions to exact matches ([46101d3](https://github.com///commit/46101d3bafc74cdd6ab5eef4b9b1e694b2351218))
 
 ### Chore
 
-- **changelog:** update CHANGELOG.md with recent feature additions ([70aea58](https://github.com///commit/70aea58bb0faa35a131fa51bafbff405cc7b29af))
+- **changelog:** update CHANGELOG.md with recent feature additions ([7eb7eee](https://github.com///commit/7eb7eee096ebd43e12edc7078c4234f4a68f93fe))
 - **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([6df4d74](https://github.com///commit/6df4d74d94b93a9daaedfba5e1714203dd704ccf))
 - **changelog:** update CHANGELOG.md for version 0.1.0 with recent features and bug fixes ([9cf3a3b](https://github.com///commit/9cf3a3b19c181b313003310d6eb936f94622ad05))
 
