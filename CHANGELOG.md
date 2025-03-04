@@ -31,7 +31,8 @@
 
 ### Bug Fixes
 
-- **graphs:** add label to edges for better clarity in graph representation ([472325a](https://github.com///commit/472325a6e8c51dd108ab393c6ba6076b41defc2b))
+- **home:** update GitHub badge link to point to the correct repository ([49a50a0](https://github.com///commit/49a50a0a205e0fdbf9319a87f02deee56f40a6b6))
+- **graphs:** add label to edges for better clarity in graph representation ([af6f9af](https://github.com///commit/af6f9afe2431d5d5a5059796f7e7495a7bdd63b8))
 - **requirements:** update openai and streamlit versions, add streamlit_agraph ([81f3721](https://github.com///commit/81f372135e70f10a11fce51658cc6e3d4a656449))
 - update package versions to exact matches ([46101d3](https://github.com///commit/46101d3bafc74cdd6ab5eef4b9b1e694b2351218))
 
@@ -43,6 +44,7 @@
 
 ### Docs
 
+- **readme:** expand introduction and instructions for application usage ([c39919c](https://github.com///commit/c39919c710855bddb788adf9ca78b60970e50ffd))
 - add knowledge base chatbot home page and subpages refactor(core): update main function and improve imports chore: add Pandas dependency ([bb38430](https://github.com///commit/bb3843068a933a1668a959c253199f8d6cea5ece))
 - update CHANGELOG.md ([46c6fcc](https://github.com///commit/46c6fccce870c11b57f72f38f7eda38a93877449))
 - update package version commit hash ([c23b856](https://github.com///commit/c23b8560a5b107d8c34ba8b9821819f867d38ca1))
