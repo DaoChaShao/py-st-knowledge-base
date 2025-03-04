@@ -38,6 +38,7 @@
 
 ### Chore
 
+- **changelog:** update CHANGELOG.md with recent bug fixes and documentation updates ([d960fc1](https://github.com///commit/d960fc1a86226d56d372f9e1d16183296b1afb24))
 - **changelog:** update CHANGELOG.md with recent feature additions ([7eb7eee](https://github.com///commit/7eb7eee096ebd43e12edc7078c4234f4a68f93fe))
 - **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([6df4d74](https://github.com///commit/6df4d74d94b93a9daaedfba5e1714203dd704ccf))
 - **changelog:** update CHANGELOG.md for version 0.1.0 with recent features and bug fixes ([9cf3a3b](https://github.com///commit/9cf3a3b19c181b313003310d6eb936f94622ad05))
