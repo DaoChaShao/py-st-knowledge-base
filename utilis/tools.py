@@ -1,4 +1,4 @@
-from numpy import array, argmin, argsort, float64
+from numpy import array, argmin, argsort
 from pandas import DataFrame
 from scipy.spatial.distance import cdist
 from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN, SpectralClustering
@@ -200,7 +200,7 @@ def knowledge_base_builder(embeddings: list, labels: list[int], num_clusters: in
     return knowledge_base
 
 
-def search_top_one(embedding_model, model_name: str, query: list, knowledge_base: dict) -> str:
+def search_top_one_open(embedding_model, model_name: str, query: list, knowledge_base: dict) -> str:
     """ Search the knowledge base for the closest sentence to the query
 
     :param embedding_model: the embedding model
@@ -229,7 +229,35 @@ def search_top_one(embedding_model, model_name: str, query: list, knowledge_base
     return sentences[best_index]
 
 
-def search_top_n(embedding_model, model_name: str, query: list, knowledge_base: dict, top_n: int = 3) -> list:
+def search_top_one_hug(embedding_model, query: list, knowledge_base: dict) -> str:
+    """ Search the knowledge base for the closest sentence to the query
+
+    :param embedding_model: the embedding model
+    :param query: the query to search
+    :param knowledge_base: the knowledge base
+    :return: the closest sentence to the query
+    """
+    # Embed the query
+    query_embeddings = embedding_model.client(query)
+
+    # Find the closest cluster to the query embeddings
+    distances = cdist(query_embeddings, knowledge_base["centroids"], metric="cosine")
+    closest_cluster_index = argmin(distances)
+
+    # Find the closest sentences
+    sentences = knowledge_base["clusters"][closest_cluster_index]
+
+    # Embed the cluster sentences
+    sentences_embeddings = embedding_model.client(sentences)
+
+    # Find the closest sentence in the cluster to the query
+    distances = cdist(query_embeddings, sentences_embeddings, metric="cosine")
+    best_index = argmin(distances)
+
+    return sentences[best_index]
+
+
+def search_top_n_open(embedding_model, model_name: str, query: list, knowledge_base: dict, top_n: int = 3) -> list:
     """ Search the knowledge base for the top N the closest sentences to the query
 
     :param embedding_model: the embedding model
@@ -243,7 +271,7 @@ def search_top_n(embedding_model, model_name: str, query: list, knowledge_base: 
     query_embeddings = embedding_model.client(query, model_name, 512)
 
     # Find the closest cluster to the query embeddings
-    distances = cdist([query_embeddings], knowledge_base["centroids"], metric="cosine")
+    distances = cdist(query_embeddings, knowledge_base["centroids"], metric="cosine")
     closest_cluster_index = argmin(distances)
 
     # Find the closest sentences
@@ -251,6 +279,37 @@ def search_top_n(embedding_model, model_name: str, query: list, knowledge_base: 
 
     # Embed the cluster sentences
     sentences_embeddings = embedding_model.client(sentences, model_name, 512)
+
+    # Find the closest sentences in the cluster to the query
+    distances = cdist(query_embeddings, sentences_embeddings, metric="cosine")
+
+    # Find the top N the closest sentences
+    top_n_indices = argsort(distances)[0][:top_n]
+
+    return [sentences[i] for i in top_n_indices]
+
+
+def search_top_n_hug(embedding_model, query: list, knowledge_base: dict, top_n: int = 3) -> list:
+    """ Search the knowledge base for the top N the closest sentences to the query
+
+    :param embedding_model: the embedding model
+    :param query: the query to search
+    :param knowledge_base: the knowledge base
+    :param top_n: the number of closest sentences to return
+    :return: the top N the closest sentences to the query
+    """
+    # Embed the query
+    query_embeddings = embedding_model.client(query)
+
+    # Find the closest cluster to the query embeddings
+    distances = cdist(query_embeddings, knowledge_base["centroids"], metric="cosine")
+    closest_cluster_index = argmin(distances)
+
+    # Find the closest sentences
+    sentences = knowledge_base["clusters"][closest_cluster_index]
+
+    # Embed the cluster sentences
+    sentences_embeddings = embedding_model.client(sentences)
 
     # Find the closest sentences in the cluster to the query
     distances = cdist(query_embeddings, sentences_embeddings, metric="cosine")
