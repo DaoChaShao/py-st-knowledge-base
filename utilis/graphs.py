@@ -55,7 +55,7 @@ def network(clusters: dict) -> agraph:
                         size=30, font={"size": 16})
             nodes.append(node)
 
-            edge = Edge(source=sentence, target=f"{label}", arrow_to=True,
+            edge = Edge(source=sentence, target=f"{label}", arrow_to=True, label="grouped",
                         width=2, color=Color.GRAY)
             edges.append(edge)
 
