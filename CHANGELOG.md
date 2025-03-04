@@ -5,6 +5,9 @@
 
 ### Features
 
+- **tools:** add knowledge base builder and search functions for enhanced query handling ([610a630](https://github.com///commit/610a6301f933bcb93c44cc9938564d5dc87b9720))
+- **requirements:** add scipy dependency for scientific computing ([566af88](https://github.com///commit/566af88c5912b9f8c07ba9670cb22ff85d16644d))
+- **cluster:** enhance clustering functionality with COMPARES and QUERIES data handling ([61d6b32](https://github.com///commit/61d6b32b0cda517905228406e0fdf46bb023c028))
 - **tools:** implement knowledge base builder using numpy for clustering centroids ([03f5925](https://github.com///commit/03f59257d8dd9eed27460a3f0e1f399a2089a7b4))
 - **requirements:** add numpy dependency for enhanced numerical operations ([1be0257](https://github.com///commit/1be0257026f2882d9e8d4195fb75b10981303774))
 - **graphs:** update node styles for improved visualization clarity ([d20c144](https://github.com///commit/d20c144ffa4faea1f7f4aa55e2d0258fc36d174b))
@@ -31,8 +34,8 @@
 
 ### Chore
 
+- **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([6df4d74](https://github.com///commit/6df4d74d94b93a9daaedfba5e1714203dd704ccf))
 - **changelog:** update CHANGELOG.md for version 0.1.0 with recent features and bug fixes ([9cf3a3b](https://github.com///commit/9cf3a3b19c181b313003310d6eb936f94622ad05))
-- **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([975cc0a](https://github.com///commit/975cc0a5e34c4396a34ca7922dd0ff96ff9cc3ce))
 
 ### Docs
 
