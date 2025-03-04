@@ -5,6 +5,8 @@
 
 ### Features
 
+- **tools:** add support for Hugging Face embeddings in search functions ([842ff00](https://github.com///commit/842ff001bececb45879a3ff54628ccf20b3e98aa))
+- **cluster:** enhance clustering and feedback functions with OpenAI and Hugging Face support ([7afac82](https://github.com///commit/7afac8295e92e6a8f7c58e934082cf5c7f38af90))
 - **tools:** add knowledge base builder and search functions for enhanced query handling ([610a630](https://github.com///commit/610a6301f933bcb93c44cc9938564d5dc87b9720))
 - **requirements:** add scipy dependency for scientific computing ([566af88](https://github.com///commit/566af88c5912b9f8c07ba9670cb22ff85d16644d))
 - **cluster:** enhance clustering functionality with COMPARES and QUERIES data handling ([61d6b32](https://github.com///commit/61d6b32b0cda517905228406e0fdf46bb023c028))
@@ -34,7 +36,7 @@
 
 ### Chore
 
-- **changelog:** update CHANGELOG.md with recent feature additions ([0c94765](https://github.com///commit/0c9476546ff911662ed27fbb4e3025be538ed3e8))
+- **changelog:** update CHANGELOG.md with recent feature additions ([5f26b17](https://github.com///commit/5f26b177310db2280b572b525dffe645c9a231c4))
 - **changelog:** update CHANGELOG.md with recent feature additions and bug fixes ([6df4d74](https://github.com///commit/6df4d74d94b93a9daaedfba5e1714203dd704ccf))
 - **changelog:** update CHANGELOG.md for version 0.1.0 with recent features and bug fixes ([9cf3a3b](https://github.com///commit/9cf3a3b19c181b313003310d6eb936f94622ad05))
 
