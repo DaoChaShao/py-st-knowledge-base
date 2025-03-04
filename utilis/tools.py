@@ -1,5 +1,6 @@
-from numpy import array
+from numpy import array, argmin, argsort, float64
 from pandas import DataFrame
+from scipy.spatial.distance import cdist
 from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN, SpectralClustering
 from sklearn.metrics import silhouette_score
 from sklearn.mixture import GaussianMixture
@@ -39,7 +40,8 @@ class Timer(object):
         return f"{self._description} has NOT been started."
 
 
-SENTENCES: list[str] = [
+QUERIES: list[str] = ["苹果公司的新品"]
+COMPARES: list[str] = [
     "Transformer 是一种深度学习模型。",
     "它用于自然语言处理任务。",
     "自注意力机制是 Transformer 的核心。",
@@ -54,6 +56,22 @@ SENTENCES: list[str] = [
     "华为是一家高科技公司。",
     "华为 P50 手机采用了华为自研芯片。",
 ]
+
+
+# QUERIES: list[str] = ["为什么良好的睡眠对健康至关重要？"]
+# COMPARES: list[str] = [
+#     "良好的睡眠有助于身体修复自身，增强免疫系统",
+#     "在监督学习中，算法经常需要大量的标记数据来进行有效学习",
+#     "睡眠不足可能导致长期健康问题，如心脏病和糖尿病",
+#     "这种学习方法依赖于数据质量和数量",
+#     "它帮助维持正常的新陈代谢和体重控制",
+#     "睡眠对儿童和青少年的大脑发育和成长尤为重要",
+#     "良好的睡眠有助于提高日间的工作效率和注意力",
+#     "监督学习的成功取决于特征选择和算法的选择",
+#     "量子计算机的发展仍处于早期阶段，面临技术和物理挑战",
+#     "量子计算机与传统计算机不同，后者使用二进制位进行计算",
+#     "机器学习使我睡不着觉",
+# ]
 
 
 def paragraph(chunks: dict[int, list[str]]):
@@ -134,7 +152,7 @@ def n_clusters_ss(embeddings: list, max_: int) -> int:
     return best_k
 
 
-def cluster_kmeans(embeddings: list, sentences: list[str], num_clusters: int = 5) -> dict:
+def cluster_kmeans(embeddings: list, sentences: list[str], num_clusters: int = 5) -> tuple:
     """ Cluster the embeddings using K-Means Clustering
 
     :param embeddings: the embeddings of the sentences
@@ -152,7 +170,95 @@ def cluster_kmeans(embeddings: list, sentences: list[str], num_clusters: int = 5
         if label not in clusters:
             clusters[label] = []
         clusters[label].append(sentences[index])
-    return clusters
+    return kmeans.labels_, clusters
+
+
+def knowledge_base_builder(embeddings: list, labels: list[int], num_clusters: int, sentences: list[str]) -> dict:
+    """ Build a knowledge base from the cluster centroids and sentences
+
+    :param embeddings: the embeddings of the sentences
+    :param labels: the cluster labels
+    :param num_clusters: the number of clusters
+    :param sentences: the sentences to cluster
+    :return: a dictionary of the knowledge base
+    """
+    embeddings = array(embeddings)
+    labels = array(labels)
+    # Calculate the cluster centroids
+    centroids = array([embeddings[labels == i].mean(axis=0) for i in range(num_clusters)])
+
+    # Create a dictionary with the cluster centroids and sentences
+    knowledge_base: dict[str, list | dict] = {
+        "centroids": centroids,
+        "clusters": {i: [] for i in range(num_clusters)},
+    }
+
+    # Assign the sentences to the corresponding clusters
+    for i, label in enumerate(labels):
+        knowledge_base["clusters"][label].append(sentences[i])
+
+    return knowledge_base
+
+
+def search_top_one(embedding_model, model_name: str, query: list, knowledge_base: dict) -> str:
+    """ Search the knowledge base for the closest sentence to the query
+
+    :param embedding_model: the embedding model
+    :param model_name: the model name
+    :param query: the query to search
+    :param knowledge_base: the knowledge base
+    :return: the closest sentence to the query
+    """
+    # Embed the query
+    query_embeddings = embedding_model.client(query, model_name, 512)
+
+    # Find the closest cluster to the query embeddings
+    distances = cdist(query_embeddings, knowledge_base["centroids"], metric="cosine")
+    closest_cluster_index = argmin(distances)
+
+    # Find the closest sentences
+    sentences = knowledge_base["clusters"][closest_cluster_index]
+
+    # Embed the cluster sentences
+    sentences_embeddings = embedding_model.client(sentences, model_name, 512)
+
+    # Find the closest sentence in the cluster to the query
+    distances = cdist(query_embeddings, sentences_embeddings, metric="cosine")
+    best_index = argmin(distances)
+
+    return sentences[best_index]
+
+
+def search_top_n(embedding_model, model_name: str, query: list, knowledge_base: dict, top_n: int = 3) -> list:
+    """ Search the knowledge base for the top N the closest sentences to the query
+
+    :param embedding_model: the embedding model
+    :param model_name: the model name
+    :param query: the query to search
+    :param knowledge_base: the knowledge base
+    :param top_n: the number of closest sentences to return
+    :return: the top N the closest sentences to the query
+    """
+    # Embed the query
+    query_embeddings = embedding_model.client(query, model_name, 512)
+
+    # Find the closest cluster to the query embeddings
+    distances = cdist([query_embeddings], knowledge_base["centroids"], metric="cosine")
+    closest_cluster_index = argmin(distances)
+
+    # Find the closest sentences
+    sentences = knowledge_base["clusters"][closest_cluster_index]
+
+    # Embed the cluster sentences
+    sentences_embeddings = embedding_model.client(sentences, model_name, 512)
+
+    # Find the closest sentences in the cluster to the query
+    distances = cdist(query_embeddings, sentences_embeddings, metric="cosine")
+
+    # Find the top N the closest sentences
+    top_n_indices = argsort(distances)[0][:top_n]
+
+    return [sentences[i] for i in top_n_indices]
 
 
 def cluster_agglomerate(embeddings: list, sentences: list[str], threshold: float = 1.0) -> dict:
@@ -206,17 +312,3 @@ def cluster_gmm(embeddings: list, sentences: list[str], num_clusters: int = 5) -
             clusters[label] = []
         clusters[label].append(sentences[i])
     return clusters
-
-
-def knowledge_base_builder(embeddings: list, labels: list[int], num_clusters: int, sentences: list[str]):
-    centroids = array([embeddings[labels == i].mean(axis=0) for i in range(num_clusters)])
-
-    knowledge_base: dict[str, list | dict] = {
-        "centroids": centroids,
-        "clusters": {i: [] for i in range(num_clusters)},
-    }
-
-    for i, label in enumerate(labels):
-        knowledge_base["clusters"][label].append(sentences[i])
-
-    return knowledge_base
